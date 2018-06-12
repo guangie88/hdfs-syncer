@@ -8,6 +8,8 @@ import org.apache.hadoop.security.UserGroupInformation
 
 import com.moandjiezana.toml.Toml
 
+import scala.collection.JavaConversions._
+
 case class Keytab(login: String, path: String)
 
 case class FileConf(
@@ -21,12 +23,13 @@ object Main extends App {
     .read(new File("config/hdfs-syncer.toml"))
     .to(classOf[FileConf])
 
+  // set up the HDFS configuration
   val conf = new Configuration()
 
-  conf.set("fs.defaultFS", "hdfs://localhost:8020")
-  conf.set("hadoop.security.authentication", "kerberos")
-  conf.set("hadoop.rpc.protection", "integrity")
-  conf.set("dfs.namenode.kerberos.principal.pattern", "hdfs/localhost@esciencecenter.nl")
+  fileConf.conf.foreach { case (k, v) => {
+    val key = k.stripPrefix("\"").stripSuffix("\"").trim
+    conf.set(key, v)
+  }}
 
   UserGroupInformation.setConfiguration(conf)
   UserGroupInformation.loginUserFromKeytab("hdfs/localhost@esciencecenter.nl", "./config/krb5.keytab")
