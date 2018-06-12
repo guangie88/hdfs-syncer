@@ -35,11 +35,13 @@ object Main extends App {
     def level(): Int = argConf.verbose()
   }
 
+  Log.v2("Starting hdfs-syncer")
+
   val fileConf = new Toml()
     .read(new File(argConf.fileConf()))
     .to(classOf[FileConf])
 
-  Log.v1(Log.prettyPrint(fileConf))
+  Log.v2(Log.prettyPrint(fileConf))
 
   // set up the HDFS configuration
   val hdfsConf = new Configuration()
@@ -49,8 +51,12 @@ object Main extends App {
     hdfsConf.set(k.stripPrefix("\"").stripSuffix("\"").trim, v)
   }
 
+  // allow both keytab and non-keytab login
   UserGroupInformation.setConfiguration(hdfsConf)
-  UserGroupInformation.loginUserFromKeytab(fileConf.keytab.login, fileConf.keytab.path)
+
+  if (fileConf.keytab != null) {
+    UserGroupInformation.loginUserFromKeytab(fileConf.keytab.login, fileConf.keytab.path)
+  }
 
   val fs = FileSystem.get(hdfsConf)
   val files = fileConf.globs.flatMap(f => fs.globStatus(new HdfsPath(f)))
