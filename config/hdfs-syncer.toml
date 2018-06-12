@@ -3,6 +3,8 @@ globs = [
     "/data/*/*/volume_logs/{input,output}.log",
 ]
 
+dst = "./data"
+
 [conf]
 "fs.defaultFS" = "hdfs://localhost:8020"
 "hadoop.security.authentication" = "kerberos"
