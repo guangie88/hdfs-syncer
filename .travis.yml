@@ -1,0 +1,16 @@
+language: scala
+scala:
+  - 2.12.4
+
+before_install:
+- set -e
+
+script:
+- sbt compile
+- sbt test
+- sbt scalastyle
+
+branches:
+  only:
+  - master
+  - /^v\d+\.\d+\.\d+(-\S*)?$/
