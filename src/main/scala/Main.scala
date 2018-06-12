@@ -7,11 +7,16 @@ import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.{Path => HdfsPath}
 import org.apache.hadoop.security.UserGroupInformation
 
+import org.rogach.scallop.ScallopConf
+
 import com.moandjiezana.toml.Toml
 
 import scala.collection.JavaConversions._
 
-case class Keytab(login: String, path: String)
+class ArgConf(arguments: Seq[String]) extends ScallopConf(arguments) {
+  val fileConf = opt[String](required = true)
+  verify()
+}
 
 case class FileConf(
   globs: Array[String],
@@ -20,23 +25,27 @@ case class FileConf(
   keytab: Keytab,
 )
 
+case class Keytab(login: String, path: String)
+
 object Main extends App {
+  val argConf = new ArgConf(args)
+
   val fileConf = new Toml()
-    .read(new File("config/hdfs-syncer.toml"))
+    .read(new File(argConf.fileConf()))
     .to(classOf[FileConf])
 
   // set up the HDFS configuration
-  val conf = new Configuration()
+  val hdfsConf = new Configuration()
   val dstDir = Paths.get(fileConf.dst)
 
   fileConf.conf.foreach { case (k, v) =>
-    conf.set(k.stripPrefix("\"").stripSuffix("\"").trim, v)
+    hdfsConf.set(k.stripPrefix("\"").stripSuffix("\"").trim, v)
   }
 
-  UserGroupInformation.setConfiguration(conf)
+  UserGroupInformation.setConfiguration(hdfsConf)
   UserGroupInformation.loginUserFromKeytab(fileConf.keytab.login, fileConf.keytab.path)
 
-  val fs = FileSystem.get(conf)
+  val fs = FileSystem.get(hdfsConf)
   val files = fileConf.globs.flatMap(f => fs.globStatus(new HdfsPath(f)))
 
   for (f <- files) {
