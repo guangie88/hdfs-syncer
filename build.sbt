@@ -20,14 +20,13 @@ version := "1.0"
 // mostly only necessary if you intend to publish your library's binaries on a
 // place like Sonatype or Bintray.
 
-
 // Want to use a published library in your project?
 // You can define other libraries as dependencies in your build like this:
 libraryDependencies ++= Seq(
     "org.apache.hadoop" % "hadoop-client" % "2.6.0",
     "org.apache.hadoop" % "hadoop-hdfs" % "2.6.0",
-    "com.moandjiezana.toml" % "toml4j" % "0.7.2",
     "org.rogach" %% "scallop" % "3.1.2",
+    "com.moandjiezana.toml" % "toml4j" % "0.7.2",
 )
 
 // Here, `libraryDependencies` is a set of dependencies, and by using `+=`,

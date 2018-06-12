@@ -1,20 +1,20 @@
 import java.io.File
 import java.nio.file.Paths
 import java.util.{Map => JMap}
+import scala.collection.JavaConversions._
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.{Path => HdfsPath}
 import org.apache.hadoop.security.UserGroupInformation
 
-import org.rogach.scallop.ScallopConf
-
 import com.moandjiezana.toml.Toml
-
-import scala.collection.JavaConversions._
+import org.rogach.scallop.ScallopConf
 
 class ArgConf(arguments: Seq[String]) extends ScallopConf(arguments) {
   val fileConf = opt[String](required = true)
+  // this takes in -vvv based on the first letter of variable name
+  val verbose = tally()
   verify()
 }
 
@@ -28,11 +28,18 @@ case class FileConf(
 case class Keytab(login: String, path: String)
 
 object Main extends App {
+  // take in CLI arg configuration and set verbose level
   val argConf = new ArgConf(args)
+
+  implicit val verboser: Verboser = new Verboser {
+    def level(): Int = argConf.verbose()
+  }
 
   val fileConf = new Toml()
     .read(new File(argConf.fileConf()))
     .to(classOf[FileConf])
+
+  Log.v1(Log.prettyPrint(fileConf))
 
   // set up the HDFS configuration
   val hdfsConf = new Configuration()
@@ -56,6 +63,7 @@ object Main extends App {
       .stripPrefix("/")
 
     val dst = new HdfsPath(dstDir.resolve(rel).toString)
+    Log.v1(s"Syncing ${src} -> ${dst}")
     fs.copyToLocalFile(src, dst)
   }
 
