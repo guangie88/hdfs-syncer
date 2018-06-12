@@ -12,7 +12,7 @@ scalaVersion := "2.12.4"
 
 // It's possible to define many kinds of settings, such as:
 
-name := "hello-world"
+name := "hdfs-syncer"
 organization := "ch.epfl.scala"
 version := "1.0"
 
@@ -24,10 +24,10 @@ version := "1.0"
 // Want to use a published library in your project?
 // You can define other libraries as dependencies in your build like this:
 libraryDependencies ++= Seq(
-    "org.typelevel" %% "cats-core" % "1.0.1",
-    // "org.apache.hadoop" % "hadoop-core" % "1.2.1",
     "org.apache.hadoop" % "hadoop-client" % "2.6.0",
-    "org.apache.hadoop" % "hadoop-hdfs" % "2.6.0"
+    "org.apache.hadoop" % "hadoop-hdfs" % "2.6.0",
+    "com.moandjiezana.toml" % "toml4j" % "0.7.2",
+    "org.rogach" %% "scallop" % "3.1.2",
 )
 
 // Here, `libraryDependencies` is a set of dependencies, and by using `+=`,
