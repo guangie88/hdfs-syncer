@@ -14,7 +14,7 @@ scalaVersion := "2.12.4"
 
 name := "hdfs-syncer"
 organization := "ch.epfl.scala"
-version := "1.0"
+version := "0.1"
 
 // Note, it's not required for you to define these three settings. These are
 // mostly only necessary if you intend to publish your library's binaries on a
