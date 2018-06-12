@@ -26,19 +26,15 @@ object Main extends App {
   // set up the HDFS configuration
   val conf = new Configuration()
 
-  fileConf.conf.foreach { case (k, v) => {
-    val key = k.stripPrefix("\"").stripSuffix("\"").trim
-    conf.set(key, v)
-  }}
+  fileConf.conf.foreach { case (k, v) =>
+    conf.set(k.stripPrefix("\"").stripSuffix("\"").trim, v)
+  }
 
   UserGroupInformation.setConfiguration(conf)
-  UserGroupInformation.loginUserFromKeytab("hdfs/localhost@esciencecenter.nl", "./config/krb5.keytab")
+  UserGroupInformation.loginUserFromKeytab(fileConf.keytab.login, fileConf.keytab.path)
 
   val fs = FileSystem.get(conf)
-
-  val files =
-    fs.globStatus(new Path("/data/*/*/valid_data_count/count.csv")) ++
-    fs.globStatus(new Path("/data/*/*/volume_logs/{input,output}.log"))
+  val files = fileConf.globs.flatMap(f => fs.globStatus(new Path(f)))
 
   for (f <- files) {
     println(f)
