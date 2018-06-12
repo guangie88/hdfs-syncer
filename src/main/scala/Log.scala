@@ -16,14 +16,38 @@ object Log {
   }
 
   def v2(msg: AnyRef)(implicit v: Verboser) = {
-    if (v.level >= 1) {
+    if (v.level >= 2) {
       println(msg)
     }
   }
 
   def v3(msg: AnyRef)(implicit v: Verboser) = {
-    if (v.level >= 1) {
+    if (v.level >= 3) {
       println(msg)
+    }
+  }
+
+  def e0(msg: AnyRef)(implicit v: Verboser) = {
+    if (v.level >= 0) {
+      System.err.println(msg)
+    }
+  }
+
+  def e1(msg: AnyRef)(implicit v: Verboser) = {
+    if (v.level >= 1) {
+      System.err.println(msg)
+    }
+  }
+
+  def e2(msg: AnyRef)(implicit v: Verboser) = {
+    if (v.level >= 2) {
+      System.err.println(msg)
+    }
+  }
+
+  def e3(msg: AnyRef)(implicit v: Verboser) = {
+    if (v.level >= 3) {
+      System.err.println(msg)
     }
   }
 

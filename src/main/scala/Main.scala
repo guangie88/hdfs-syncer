@@ -28,6 +28,13 @@ case class FileConf(
 case class Keytab(login: String, path: String)
 
 object Main extends App {
+  def fileConfAssert(field: AnyRef, name: String) = {
+    if (field == null) {
+      Log.e0(s"'${name}' field cannot be empty in TOML file")
+      System.exit(1)
+    }
+  }
+
   // take in CLI arg configuration and set verbose level
   val argConf = new ArgConf(args)
 
@@ -41,14 +48,19 @@ object Main extends App {
     .read(new File(argConf.fileConf()))
     .to(classOf[FileConf])
 
+  fileConfAssert(fileConf.globs, "globs")
+  fileConfAssert(fileConf.dst, "dst")
   Log.v2(Log.prettyPrint(fileConf))
 
   // set up the HDFS configuration
   val hdfsConf = new Configuration()
+
   val dstDir = Paths.get(fileConf.dst)
 
-  fileConf.conf.foreach { case (k, v) =>
-    hdfsConf.set(k.stripPrefix("\"").stripSuffix("\"").trim, v)
+  if (fileConf.conf != null) {
+    fileConf.conf.foreach { case (k, v) =>
+      hdfsConf.set(k.stripPrefix("\"").stripSuffix("\"").trim, v)
+    }
   }
 
   // allow both keytab and non-keytab login
@@ -59,18 +71,21 @@ object Main extends App {
   }
 
   val fs = FileSystem.get(hdfsConf)
-  val files = fileConf.globs.flatMap(f => fs.globStatus(new HdfsPath(f)))
 
-  for (f <- files) {
-    val src = f.getPath
-    
-    val rel = HdfsPath.getPathWithoutSchemeAndAuthority(src)
-      .toString
-      .stripPrefix("/")
+  if (fileConf.globs != null) {
+    val files = fileConf.globs.flatMap(f => fs.globStatus(new HdfsPath(f)))
 
-    val dst = new HdfsPath(dstDir.resolve(rel).toString)
-    Log.v1(s"Syncing ${src} -> ${dst}")
-    fs.copyToLocalFile(src, dst)
+    for (f <- files) {
+      val src = f.getPath
+      
+      val rel = HdfsPath.getPathWithoutSchemeAndAuthority(src)
+        .toString
+        .stripPrefix("/")
+
+      val dst = new HdfsPath(dstDir.resolve(rel).toString)
+      Log.v1(s"Syncing ${src} -> ${dst}")
+      fs.copyToLocalFile(src, dst)
+    }
   }
 
   fs.close
