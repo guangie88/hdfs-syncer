@@ -6,8 +6,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.security.UserGroupInformation 
 
 object Main extends App {
-  println("Hello, World!")
-
   val conf = new Configuration()
 
   conf.set("fs.defaultFS", "hdfs://localhost:8020")
@@ -19,5 +17,14 @@ object Main extends App {
   UserGroupInformation.loginUserFromKeytab("hdfs/localhost@esciencecenter.nl", "./config/krb5.keytab");
 
   val fs = FileSystem.get(conf)
-  val output = fs.create(new Path("/test.txt"))
+
+  val files =
+    fs.globStatus(new Path("/data/*/*/valid_data_count/count.csv")) ++
+    fs.globStatus(new Path("/data/*/*/volume_logs/{input,output}.log"))
+
+  for (f <- files) {
+    println(f)
+  }
+
+  fs.close()
 }
