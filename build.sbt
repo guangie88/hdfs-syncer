@@ -23,10 +23,11 @@ version := "0.1"
 // Want to use a published library in your project?
 // You can define other libraries as dependencies in your build like this:
 libraryDependencies ++= Seq(
+    "com.lihaoyi" %% "pprint" % "0.5.3",
+    "com.moandjiezana.toml" % "toml4j" % "0.7.2",
     "org.apache.hadoop" % "hadoop-client" % "2.6.0",
     "org.apache.hadoop" % "hadoop-hdfs" % "2.6.0",
     "org.rogach" %% "scallop" % "3.1.2",
-    "com.moandjiezana.toml" % "toml4j" % "0.7.2",
 )
 
 // Here, `libraryDependencies` is a set of dependencies, and by using `+=`,
