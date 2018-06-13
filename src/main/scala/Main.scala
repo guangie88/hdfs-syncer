@@ -72,7 +72,7 @@ object Main extends App {
 
   fileConfAssert(fileConf.globs, "globs")
   fileConfAssert(fileConf.dst, "dst")
-  // Log.v2(Log.prettyPrint(fileConf))
+  Log.v2(pprint.apply(fileConf))
 
   // set up the HDFS configuration
   val hdfsConf = new Configuration()
