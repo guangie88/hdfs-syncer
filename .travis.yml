@@ -6,9 +6,10 @@ before_install:
 - set -e
 
 script:
-- sbt compile
 - sbt test
 - sbt scalastyle
+- sbt compile
+- sbt assembly
 
 branches:
   only:
