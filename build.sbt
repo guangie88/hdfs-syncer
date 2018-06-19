@@ -13,7 +13,7 @@ scalaVersion := "2.12.4"
 // It's possible to define many kinds of settings, such as:
 
 name := "hdfs-syncer"
-organization := "ch.epfl.scala"
+organization := "wg.org"
 version := "0.1"
 
 // Note, it's not required for you to define these three settings. These are
@@ -28,6 +28,8 @@ libraryDependencies ++= Seq(
     "org.apache.hadoop" % "hadoop-client" % "2.6.0",
     "org.apache.hadoop" % "hadoop-hdfs" % "2.6.0",
     "org.rogach" %% "scallop" % "3.1.2",
+    // required by `pprint` above
+    "org.scala-lang" % "scala-reflect" % scalaVersion.toString,
 )
 
 // Here, `libraryDependencies` is a set of dependencies, and by using `+=`,
