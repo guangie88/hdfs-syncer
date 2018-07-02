@@ -1,3 +1,6 @@
+// [Required] Enable plugin and automatically find def main(args:Array[String]) methods from the classpath
+enablePlugins(PackPlugin)
+
 // The simplest possible sbt build file is just one line:
 
 scalaVersion := "2.12.4"
@@ -80,8 +83,3 @@ libraryDependencies ++= Seq(
 
 // To learn more about multi-project builds, head over to the official sbt
 // documentation at http://www.scala-sbt.org/documentation.html
-
-assemblyMergeStrategy in assembly := {
-    case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-    case x => MergeStrategy.first
-}
